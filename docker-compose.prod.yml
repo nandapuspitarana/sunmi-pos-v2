@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: sunmi-pos-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - sunmi-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: sunmi-pos-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: sunmi_pos
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-your_jwt_secret_key_here}
+      JWT_EXPIRES_IN: 24h
+      PORT: 3000
+      CORS_ORIGIN: http://localhost
+      SOCKET_CORS_ORIGIN: http://localhost
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@pos.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      BCRYPT_ROUNDS: 10
+      API_BASE_URL: http://localhost/api
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - sunmi-network
+
+  postgres:
+    image: postgres:15
+    container_name: sunmi-pos-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sunmi_pos
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - sunmi-network
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads:
+    driver: local
+
+networks:
+  sunmi-network:
+    driver: bridge

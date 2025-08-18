@@ -1,5 +1,51 @@
 # Sunmi POS System v2
 
+## Menjalankan Aplikasi dalam Mode Production
+
+Untuk menjalankan aplikasi dalam mode production menggunakan Docker, ikuti langkah-langkah berikut:
+
+### Persiapan
+
+1. Pastikan Docker dan Docker Compose sudah terinstal di sistem Anda
+2. Buat file `.env.production` berdasarkan `.env.production.example`:
+   ```bash
+   cp .env.production.example .env.production
+   ```
+3. Edit file `.env.production` dan sesuaikan nilai-nilai variabel sesuai kebutuhan
+
+### Deployment
+
+#### Menggunakan Script
+
+Untuk Windows:
+```bash
+npm run deploy:prod
+```
+
+Untuk Linux/Mac:
+```bash
+chmod +x ./scripts/deploy-production.sh
+./scripts/deploy-production.sh
+```
+
+#### Manual
+
+```bash
+# Build container
+npm run docker:prod:build
+
+# Jalankan container
+npm run docker:prod:up
+
+# Lihat logs
+npm run docker:prod:logs
+
+# Hentikan container
+npm run docker:prod:down
+```
+
+Setelah deployment berhasil, aplikasi dapat diakses di http://localhost
+
 Sistem Point of Sale (POS) modern dengan kontrol akses gate menggunakan QR code. Dibangun dengan React, Express.js, dan PostgreSQL.
 
 ## 🚀 Fitur Utama
