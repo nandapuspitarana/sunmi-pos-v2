@@ -16,12 +16,7 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f postgres",
-    "dev:full": "concurrently \"npm run docker:up\" \"npm run dev\"",
-    "docker:prod:build": "docker-compose -f docker-compose.prod.yml build",
-    "docker:prod:up": "docker-compose -f docker-compose.prod.yml up -d",
-    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down",
-    "docker:prod:logs": "docker-compose -f docker-compose.prod.yml logs -f",
-    "deploy:prod": "powershell -File ./scripts/deploy-production.ps1"
+    "dev:full": "concurrently \"npm run docker:up\" \"npm run dev\""
   },
   "dependencies": {
     "@types/bcrypt": "^6.0.0",
