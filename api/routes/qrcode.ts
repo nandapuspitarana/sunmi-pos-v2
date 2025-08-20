@@ -62,10 +62,14 @@ router.post('/generate', authenticateToken, async (req: Request, res: Response):
       purpose: purpose?.trim() || ''
     };
 
+    // Get status from request or default to 'registered'
+    const status = req.body.status || 'registered';
+    console.log('🔄 Setting visitor status:', status);
+    
     // Create new visitor with both qr_data and qr_code
     const insertResult = await pool.query(
       'INSERT INTO visitors (qr_data, qr_code, entry_time, status, is_active, permissions, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
-      [qrCodeData, qrCodeImage, new Date(), 'registered', true, JSON.stringify(permissions), JSON.stringify(metadata)]
+      [qrCodeData, qrCodeImage, new Date(), status, true, JSON.stringify(permissions), JSON.stringify(metadata)]
     );
 
     const visitor_id = insertResult.rows[0].id;

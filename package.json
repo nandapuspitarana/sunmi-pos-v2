@@ -15,6 +15,8 @@
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f postgres",
+    "docker:rebuild": "./scripts/rebuild-docker.sh",
+    "docker:init-admin": "docker exec -it sunmi-pos-backend node --experimental-specifier-resolution=node scripts/init-admin.js",
     "dev:full": "concurrently \"npm run docker:up\" \"npm run dev\""
   },
   "dependencies": {

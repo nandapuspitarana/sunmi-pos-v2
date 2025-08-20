@@ -40,7 +40,6 @@ const QRCodes = () => {
     phone: '',
     email: '',
     company: '',
-    purpose: '',
     permissions: 'entry'
   });
 
@@ -53,7 +52,8 @@ const QRCodes = () => {
       const authStorage = localStorage.getItem('auth-storage');
       const token = authStorage ? JSON.parse(authStorage).state.token : '';
       
-      const response = await fetch('http://localhost:3001/api/qrcode/list?limit=200', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/qrcode/list?limit=200`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -74,11 +74,15 @@ const QRCodes = () => {
 
   const toggleQRCodeStatus = async (visitorId: string, currentStatus: boolean) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/qrcode/${visitorId}/status`, {
+      const authStorage = localStorage.getItem('auth-storage');
+      const token = authStorage ? JSON.parse(authStorage).state.token : '';
+      
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/qrcode/${visitorId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state.token : ''}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           is_active: !currentStatus,
@@ -100,10 +104,14 @@ const QRCodes = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3001/api/qrcode/${visitorId}`, {
+      const authStorage = localStorage.getItem('auth-storage');
+      const token = authStorage ? JSON.parse(authStorage).state.token : '';
+      
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/qrcode/${visitorId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state.token : ''}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -121,15 +129,13 @@ const QRCodes = () => {
     const phone = qrCode.metadata?.phone || '';
     const email = qrCode.metadata?.email || '';
     const company = qrCode.metadata?.company || '';
-    const purpose = qrCode.metadata?.purpose || '';
     
     const matchesSearch = qrCode.qr_data.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          qrCode.qr_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          visitorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         purpose.toLowerCase().includes(searchTerm.toLowerCase());
+                         company.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === 'all' || 
                          (selectedStatus === 'active' && qrCode.is_active) ||
                          (selectedStatus === 'inactive' && !qrCode.is_active);
@@ -202,7 +208,8 @@ const QRCodes = () => {
       const authStorage = localStorage.getItem('auth-storage');
       const token = authStorage ? JSON.parse(authStorage).state.token : '';
 
-      const response = await fetch('http://localhost:3001/api/qrcode/generate', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/qrcode/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,8 +222,8 @@ const QRCodes = () => {
           phone: formData.phone.trim(),
           email: formData.email.trim(),
           company: formData.company.trim(),
-          purpose: formData.purpose.trim(),
-          permissions: permissions
+          permissions: permissions,
+          status: 'registered'
         }),
       });
 
@@ -233,7 +240,6 @@ const QRCodes = () => {
           phone: '',
           email: '',
           company: '',
-          purpose: '',
           permissions: 'entry' 
         });
         setShowCreateModal(false);
@@ -628,24 +634,7 @@ const QRCodes = () => {
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Purpose of Visit
-                </label>
-                <select
-                  value={formData.purpose}
-                  onChange={(e) => setFormData({ ...formData, purpose: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">Select purpose</option>
-                  <option value="meeting">Meeting</option>
-                  <option value="delivery">Delivery</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="interview">Interview</option>
-                  <option value="training">Training</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
+
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

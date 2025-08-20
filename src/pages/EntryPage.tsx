@@ -28,7 +28,8 @@ const EntryPage = () => {
     setScanResult(null);
 
     try {
-      const response = await fetch('http://localhost:3001/api/entry/scan', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/entry/scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

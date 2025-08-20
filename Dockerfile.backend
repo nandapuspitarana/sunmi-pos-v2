@@ -17,5 +17,35 @@ RUN npm run check
 # Expose port
 EXPOSE 3001
 
-# Start server
-CMD ["npm", "run", "server:dev"]
+# Set environment variables
+ARG PORT
+ARG API_BASE_URL
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASSWORD
+
+ENV PORT=${PORT:-3001}
+ENV API_BASE_URL=${API_BASE_URL:-http://localhost:3001/api}
+ENV DB_HOST=${DB_HOST:-postgres}
+ENV DB_PORT=${DB_PORT:-5432}
+ENV DB_NAME=${DB_NAME:-sunmi_pos}
+ENV DB_USER=${DB_USER:-postgres}
+ENV DB_PASSWORD=${DB_PASSWORD:-postgres}
+
+# Ensure init-admin.js is properly copied and has correct permissions
+RUN mkdir -p /app/scripts
+COPY scripts/init-admin.js /app/scripts/
+RUN chmod +x /app/scripts/init-admin.js
+
+# Create startup script
+RUN echo '#!/bin/sh' > /app/docker-entrypoint.sh && \
+    echo '# Initialize admin user from environment variables' >> /app/docker-entrypoint.sh && \
+    echo 'node --experimental-specifier-resolution=node scripts/init-admin.js' >> /app/docker-entrypoint.sh && \
+    echo '# Start server' >> /app/docker-entrypoint.sh && \
+    echo 'exec npm run server:dev' >> /app/docker-entrypoint.sh && \
+    chmod +x /app/docker-entrypoint.sh
+
+# Start server with initialization script
+CMD ["/app/docker-entrypoint.sh"]

@@ -34,7 +34,15 @@ const Payments = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/orders?status=${selectedStatus}&limit=100`);
+      const authStorage = localStorage.getItem('auth-storage');
+      const token = authStorage ? JSON.parse(authStorage).state.token : '';
+      
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/orders?status=${selectedStatus}&limit=100`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       if (data.success) {
         setOrders(data.orders);
@@ -46,15 +54,18 @@ const Payments = () => {
     }
   };
 
+  // Definisikan API_BASE_URL dengan prioritas variabel lingkungan
+  const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+
   const handleValidatePayment = async () => {
     if (!selectedOrder) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/orders/${selectedOrder.id}/validate`, {
+      const response = await fetch(`${API_BASE_URL}/orders/${selectedOrder.id}/validate`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!).state.token : ''}`,
+          'Authorization': `Bearer ${localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')).state.token : ''}`,
         },
         body: JSON.stringify({
           status: validationAction,
@@ -202,7 +213,7 @@ const Payments = () => {
                       </button>
                       {order.payment_proof_url && (
                         <a
-                          href={`http://localhost:3001${order.payment_proof_url}`}
+                          href={`${API_BASE_URL.replace('/api', '')}${order.payment_proof_url}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-green-600 hover:text-green-900 flex items-center space-x-1"
@@ -272,7 +283,7 @@ const Payments = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-700 mb-2">Payment Proof</p>
                   <img
-                    src={`http://localhost:3001${selectedOrder.payment_proof_url}`}
+                    src={`${API_BASE_URL.replace('/api', '')}${selectedOrder.payment_proof_url}`}
                     alt="Payment proof"
                     className="max-w-full h-auto rounded border"
                   />

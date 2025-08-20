@@ -28,7 +28,7 @@ const server = createServer(app);
 // Setup Socket.io
 const io = new Server(server, {
   cors: {
-    origin: process.env.SOCKET_CORS_ORIGIN || "http://localhost:5173",
+    origin: process.env.SOCKET_CORS_ORIGIN || process.env.CORS_ORIGIN || "http://localhost:5173",
     methods: ["GET", "POST"]
   }
 });
