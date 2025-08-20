@@ -53,7 +53,8 @@ const Visitors = () => {
       const authStorage = localStorage.getItem('auth-storage');
       const token = authStorage ? JSON.parse(authStorage).state.token : '';
       
-      const response = await fetch('http://localhost:3001/api/qrcode/list?limit=200', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/qrcode/list?limit=200`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -74,7 +75,8 @@ const Visitors = () => {
       const authStorage = localStorage.getItem('auth-storage');
       const token = authStorage ? JSON.parse(authStorage).state.token : '';
       
-      const response = await fetch('http://localhost:3001/api/entry/movements', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/entry/movements`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -93,7 +95,8 @@ const Visitors = () => {
       const authStorage = localStorage.getItem('auth-storage');
       const token = authStorage ? JSON.parse(authStorage).state.token : '';
       
-      const response = await fetch('http://localhost:3001/api/entry/scan', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : import.meta.env.API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/entry/scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,6 +109,7 @@ const Visitors = () => {
           scanned_by: 'Admin'
         }),
       });
+
 
       const data = await response.json();
       if (data.success) {

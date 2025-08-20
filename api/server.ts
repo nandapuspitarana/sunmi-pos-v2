@@ -13,7 +13,7 @@ server.listen(PORT, () => {
   console.log(`🚀 Server ready on port ${PORT}`);
   console.log(`📡 Socket.io server running`);
   console.log(`📁 Static files served from /uploads`);
-  console.log(`🔗 API endpoints available at http://localhost:${PORT}/api`);
+  console.log(`🔗 API endpoints available at ${process.env.API_BASE_URL || `http://localhost:${PORT}/api`}`);
 });
 
 /**

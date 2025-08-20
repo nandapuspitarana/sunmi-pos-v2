@@ -113,16 +113,13 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_products_updated_at BEFORE UPDATE ON products
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert default admin (password: admin123)
--- Password hash for 'admin123' using bcrypt with salt rounds 10
-INSERT INTO admins (email, password_hash, name) VALUES 
-('admin@pos.com', '$2b$10$aYS84ZeaMAxEHTY6Al3BR.Bck3iu5efQH7hIYczErsiNhpiiHWW5m', 'System Administrator')
-ON CONFLICT (email) DO NOTHING;
+-- Admin user will be created by the init-admin.js script using environment variables
+-- instead of hardcoded values here
 
--- Grant permissions to pos_app user
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO pos_app;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO pos_app;
-GRANT USAGE ON SCHEMA public TO pos_app;
+-- Grant permissions to postgres user (as configured in docker-compose.yml)
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres;
+GRANT USAGE ON SCHEMA public TO postgres;
 
 -- Insert sample products
 INSERT INTO products (name, price, stock, category, image_url) VALUES 

@@ -6,6 +6,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import pool from '../api/config/database.ts';
+import initializeAdmin from './init-admin.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +44,10 @@ async function setupDatabase() {
       }
     }
     
-    console.log('✅ Database setup completed successfully!');
+    console.log('✅ Database schema setup completed successfully!');
+    
+    // Initialize admin user from environment variables
+    await initializeAdmin();
     
     // Test database connection
     const testResult = await client.query('SELECT COUNT(*) FROM admins');

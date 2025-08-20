@@ -46,6 +46,15 @@ Copy `.env.example` ke `.env` dan sesuaikan konfigurasi:
 cp .env.example .env
 ```
 
+Pastikan untuk mengatur kredensial admin default di file `.env`:
+```
+# Admin Default Credentials
+ADMIN_EMAIL=admin@sunmi.com
+ADMIN_PASSWORD=admin123
+ADMIN_NAME=System Administrator
+```
+Kredensial ini akan digunakan untuk membuat atau memperbarui akun admin saat menjalankan setup database atau saat container Docker dimulai. Untuk informasi lebih lanjut, lihat [dokumentasi kredensial admin](docs/admin-credentials.md).
+
 ### 4. Start PostgreSQL dengan Docker
 ```bash
 npm run docker:up
@@ -66,6 +75,12 @@ docker-compose logs -f
 
 # Untuk menghentikan semua container
 docker-compose down
+
+# Untuk memperbarui container backend dengan konfigurasi admin terbaru dari .env
+npm run docker:rebuild
+
+# Untuk memperbarui admin berdasarkan .env tanpa rebuild container
+npm run docker:init-admin
 ```
 
 ### 7. Akses Aplikasi

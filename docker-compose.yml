@@ -24,41 +24,61 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
+      args:
+        - PORT=${PORT:-3001}
+        - API_BASE_URL=${API_BASE_URL:-http://localhost:3001/api}
+        - DB_HOST=${DB_HOST:-postgres}
+        - DB_PORT=${DB_PORT:-5432}
+        - DB_NAME=${DB_NAME:-sunmi_pos}
+        - DB_USER=${DB_USER:-postgres}
+        - DB_PASSWORD=${DB_PASSWORD:-postgres}
     container_name: sunmi-pos-backend
     restart: unless-stopped
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
-      - PORT=3001
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/sunmi_pos
+      - PORT=${PORT:-3001}
+      - DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-sunmi_pos}
+      - API_BASE_URL=${API_BASE_URL:-http://localhost:3001/api}
       # Note: Host machine connects via port 5433, but inside Docker network it's still 5432
-      - JWT_SECRET=your_jwt_secret_here
-      - SOCKET_CORS_ORIGIN=http://localhost:5173
     ports:
       - "3001:3001"
     volumes:
       - ./api:/app/api
       - ./uploads:/app/uploads
+      - ./scripts:/app/scripts
       - node_modules_backend:/app/node_modules
+      - ./.env:/app/.env
+    command: ["/bin/sh", "-c", "node --experimental-specifier-resolution=node scripts/init-admin.js && npm run server:dev"]
 
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
+      args:
+        - VITE_API_URL=${VITE_API_URL:-http://localhost:3001}
+        - VITE_SOCKET_URL=${VITE_SOCKET_URL:-http://localhost:3001}
     container_name: sunmi-pos-frontend
     restart: unless-stopped
     depends_on:
       - backend
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
-      - VITE_API_URL=http://localhost:3001
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3001}
+      - VITE_SOCKET_URL=${VITE_SOCKET_URL:-http://localhost:3001}
     ports:
       - "5173:5173"
     volumes:
       - ./src:/app/src
       - ./public:/app/public
       - node_modules_frontend:/app/node_modules
+      - ./.env:/app/.env
 
 volumes:
   postgres_data:
