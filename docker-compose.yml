@@ -41,6 +41,7 @@ services:
       - .env
     environment:
       - NODE_ENV=production
+      - DOCKER_ENV=true
       - PORT=${PORT:-3001}
       - DATABASE_URL=postgres://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-sunmi_pos}
       - API_BASE_URL=${API_BASE_URL:-http://localhost:3001/api}

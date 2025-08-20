@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: sunmi_pos
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      DOCKER_ENV: 'true'
     ports:
       - "5433:5432"
     volumes:
