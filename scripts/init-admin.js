@@ -11,9 +11,9 @@ dotenv.config();
 // Create a PostgreSQL connection pool
 const pool = new pg.Pool({
   // In Docker environment, use postgres as host (service name)
-  host: process.env.NODE_ENV === 'production' ? 'postgres' : (process.env.DB_HOST || 'localhost'),
+  host: process.env.NODE_ENV === 'production' || process.env.DOCKER_ENV === 'true' ? 'postgres' : (process.env.DB_HOST || 'localhost'),
   // In Docker, PostgreSQL runs on standard port 5432
-  port: parseInt(process.env.NODE_ENV === 'production' ? '5432' : (process.env.DB_PORT || '5432')),
+  port: parseInt(process.env.NODE_ENV === 'production' || process.env.DOCKER_ENV === 'true' ? '5432' : (process.env.DB_PORT || '5432')),
   database: process.env.DB_NAME || 'sunmi_pos',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',

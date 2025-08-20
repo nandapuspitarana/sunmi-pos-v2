@@ -33,6 +33,7 @@ ENV DB_PORT=${DB_PORT:-5432}
 ENV DB_NAME=${DB_NAME:-sunmi_pos}
 ENV DB_USER=${DB_USER:-postgres}
 ENV DB_PASSWORD=${DB_PASSWORD:-postgres}
+ENV DOCKER_ENV=true
 
 # Ensure init-admin.js is properly copied and has correct permissions
 RUN mkdir -p /app/scripts
