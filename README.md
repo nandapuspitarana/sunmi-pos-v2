@@ -51,7 +51,29 @@ cp .env.example .env
 npm run docker:up
 ```
 
-### 5. Setup Database Schema
+### 5. Jalankan Aplikasi (Development Mode)
+```bash
+npm run dev
+```
+
+### 6. Atau Jalankan Semua Komponen dengan Docker
+```bash
+# Jalankan frontend, backend, dan database dalam container Docker
+docker-compose up -d
+
+# Untuk melihat logs
+docker-compose logs -f
+
+# Untuk menghentikan semua container
+docker-compose down
+```
+
+### 7. Akses Aplikasi
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3001/api
+- Admin Dashboard: http://localhost:5173/admin
+
+### 8. Setup Database Schema
 ```bash
 npm run db:setup
 ```

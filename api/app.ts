@@ -14,7 +14,7 @@ import entryRoutes from './routes/entry.js';
 import qrcodeRoutes from './routes/qrcode.js';
 import productsRoutes from './routes/products.js';
 import ordersRoutes from './routes/orders.js';
-
+import type { Error } from './types/error';
 // for esm mode
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./migrations:/docker-entrypoint-initdb.d
@@ -20,6 +20,50 @@ services:
       timeout: 10s
       retries: 3
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: sunmi-pos-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/sunmi_pos
+      # Note: Host machine connects via port 5433, but inside Docker network it's still 5432
+      - JWT_SECRET=your_jwt_secret_here
+      - SOCKET_CORS_ORIGIN=http://localhost:5173
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./api:/app/api
+      - ./uploads:/app/uploads
+      - node_modules_backend:/app/node_modules
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: sunmi-pos-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://localhost:3001
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - node_modules_frontend:/app/node_modules
+
 volumes:
   postgres_data:
+    driver: local
+  node_modules_backend:
+    driver: local
+  node_modules_frontend:
     driver: local
