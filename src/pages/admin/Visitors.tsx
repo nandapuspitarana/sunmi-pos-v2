@@ -221,7 +221,10 @@ const Visitors = () => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Currently Inside</p>
               <p className="text-2xl font-bold text-gray-900">
-                {visitors.filter(v => v.status === 'entered').length}
+                {visitors
+                  .filter(v => v.status === 'entered')
+                  .reduce((total, visitor) => total + (visitor.metadata?.guest_count || 1), 0)
+                }
               </p>
             </div>
           </div>
